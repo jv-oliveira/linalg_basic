@@ -7,12 +7,11 @@
 
 #include "matrix_base.h"
 
-namespace numeric {
+namespace linalg {
     template<typename __data_t>
     class vector : public vector_base<__data_t> {
     public:
         using data_t = __data_t;
-        using base = typename vector_base<data_t>::base;
         using vector_base<data_t>::vector_base;
 
         constexpr vector(size_t n)
@@ -34,7 +33,6 @@ namespace numeric {
     class transposed_vector : public vector_base<__data_t> {
     public:
         using data_t = __data_t;
-        using base = typename vector_base<data_t>::base;
         using vector_base<data_t>::vector_base;
 
         constexpr transposed_vector(size_t n)
@@ -56,7 +54,6 @@ namespace numeric {
     class vector_view : public vector_base<__data_t> {
     public:
         using data_t = __data_t;
-        using base = typename vector_base<data_t>::base;
     private:
         using vector_base<data_t>::vector_base;
 
@@ -83,14 +80,13 @@ namespace numeric {
     class transposed_vector_view : public vector_base<__data_t> {
     public:
         using data_t = __data_t;
-        using base = typename vector_base<data_t>::base;
     private:
         using vector_base<data_t>::vector_base;
         friend class matrix_base<data_t>;
 
         transposed_vector_view(size_t n, std::shared_ptr<data_t[]> ptr) {
             this->_size = {1u, n},
-                    this->_storage = std::move(ptr);
+            this->_storage = std::move(ptr);
         }
 
     };

@@ -8,13 +8,12 @@
 #include "matrix_base.h"
 #include <numeric>
 
-namespace numeric {
+namespace linalg {
 
     template<typename __data_t>
     class matrix : public matrix_base<__data_t> {
     public:
         using data_t = __data_t;
-        using base = typename matrix_base<data_t>::base;
         using matrix_base<data_t>::matrix_base;
     };
 
@@ -22,10 +21,7 @@ namespace numeric {
     class square_matrix : public matrix<__data_t> {
     public:
         using data_t = __data_t;
-        using base = typename matrix<data_t>::base;
     private:
-        using matrix<data_t>::matrix;
-
         static bool is_zero(const data_t &value,
                             std::enable_if_t<not std::is_integral_v<data_t>> eps) {
             if constexpr (std::is_integral_v<data_t>) {
@@ -40,12 +36,27 @@ namespace numeric {
         }
 
     public:
-
-        square_matrix(square_matrix<data_t>&& rhs) {
+        template<typename T, typename std::enable_if_t<is_data_type_v<T>, int> = 0>
+        square_matrix(std::initializer_list<std::initializer_list<T>> groovy_matrix)
+                : matrix<data_t>(std::move(groovy_matrix)) {
             assert(this->_size.n == this->_size.m);
         }
 
-        square_matrix(const square_matrix<data_t>& rhs) {
+        template<typename T, typename std::enable_if_t<matrix_expr<typename T::data_t>::template is_derived_from_matrix_expr_v<T>, int> = 0>
+        square_matrix(const T &rhs)
+                : matrix<data_t>(std::forward<T>(rhs)) {
+            assert(this->_size.n == this->_size.m);
+        }
+
+        template<typename T, typename std::enable_if_t<std::is_convertible_v<T, matrix_expr<typename T::data_t>>, int> = 0>
+        square_matrix(T&& rhs) :
+                matrix<data_t>(std::forward<T&&>(rhs)) {
+            assert(this->_size.n == this->_size.m);
+        }
+
+        template<typename T, typename std::enable_if_t<is_data_type_v<T>> = 0>
+        square_matrix(matrix_base<T>&& rhs) :
+                matrix<data_t>(std::forward<matrix_base<T>&&>(rhs)) {
             assert(this->_size.n == this->_size.m);
         }
 

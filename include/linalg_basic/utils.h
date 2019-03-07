@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <complex>
 
-namespace numeric {
+namespace linalg {
 
     template<typename T, typename ... Ts>
     using is_one_of = std::disjunction<std::is_same<T, Ts>...>;
@@ -28,6 +28,9 @@ namespace numeric {
 
     template<typename data_t>
     inline constexpr bool is_data_type_v = is_data_type_t<data_t>::value;
+
+
+
 
 }
 

@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-namespace numeric {
+namespace linalg {
     struct index_exception : public std::out_of_range {
         index_exception(std::string func, size_t index, size_t upper_limit)
                 : std::out_of_range(func +

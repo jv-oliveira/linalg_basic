@@ -24,18 +24,17 @@
 #include "index_exception.h"
 
 
-namespace numeric {
+namespace linalg {
 
     template<typename __data_t>
-    class matrix_base : public matrix_expr<matrix_base<__data_t>, __data_t> {
-        template<typename, typename>
+    class matrix_base : public matrix_expr<__data_t> {
+        template<typename>
         friend
         class matrix_expr;
 
     public:
         using data_t = __data_t;
-        using base = matrix_base<data_t>;
-        using dim_t = typename matrix_expr<matrix_base<data_t>, data_t>::dim_t;
+        using dim_t = typename matrix_expr<data_t>::dim_t;
         using column_view = vector_view<data_t>;
         using line_view = transposed_vector_view<data_t>;
     private:
@@ -69,7 +68,7 @@ namespace numeric {
 
         template<typename T, typename std::enable_if_t<is_data_type_v<T>, int> = 0>
         matrix_base(std::initializer_list<std::initializer_list<T>> groovy_matrix)
-                : _size {
+                : _size{
                 groovy_matrix.size(),
                 groovy_matrix.begin()->size()
         },
@@ -82,25 +81,10 @@ namespace numeric {
         constexpr matrix_base(size_t n, size_t m)
                 : matrix_base({n, m}) {}
 
-        template<typename T, typename std::enable_if_t<matrix_expr<typename T::base, typename T::data_t>::template is_derived_from_matrix_expr_v<T>, int> = 0>
-        matrix_base(const T &rhs)
-                : _size(rhs._size),
-                  _storage(get_raw_size()) {
-            auto[n, m] = rhs.get_size();
-            for (size_t i = 0u; i < n; ++i) {
-                for (size_t j = 0u; j < m; ++j) {
-                    get_element(i, j) = rhs(i, j);
-                }
-            }
-        }
-
-        template<typename T, typename std::enable_if_t<std::is_convertible_v<T, matrix_expr<typename T::base, typename T::data_t>>, int> = 0>
-        matrix_base(T
-                    &&rhs)
+        template<typename T, typename std::enable_if_t<std::is_convertible_v<T, matrix_expr<typename T::data_t>>, int> = 0>
+        matrix_base(T &&rhs)
                 :
-                _size(std::move(rhs._size)
-                ),
-
+                _size(std::move(rhs._size)),
                 _storage(get_raw_size()) {
             auto[n, m] = _size;
             for (size_t i = 0u; i < n; ++i) {
@@ -111,13 +95,10 @@ namespace numeric {
         }
 
         template<typename T, typename std::enable_if_t<is_data_type_v<T>> = 0>
-        matrix_base(matrix_base<T>
-                    &&rhs)
+        matrix_base(matrix_base<T>&&rhs)
                 :
-                _size(std::move(rhs._size)
-                ),
-                _storage(std::move(rhs._storage)
-                ) {
+                _size(std::move(rhs._size)),
+                _storage(std::move(rhs._storage)) {
         }
 
         virtual ~matrix_base() = default;
@@ -168,7 +149,6 @@ namespace numeric {
     class vector_base : public matrix_base<__data_t> {
     public:
         using data_t  = __data_t;
-        using base = typename matrix_base<data_t>::base;
         using dim_t = typename matrix_base<data_t>::dim_t;
     protected:
         using matrix_base<data_t>::matrix_base;

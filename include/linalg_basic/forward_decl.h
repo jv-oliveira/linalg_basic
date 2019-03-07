@@ -5,7 +5,7 @@
 #ifndef LINALG_BASIC_FORWARD_DECL_H
 #define LINALG_BASIC_FORWARD_DECL_H
 
-namespace numeric {
+namespace linalg {
     template<typename data_type>
     class matrix;
 
