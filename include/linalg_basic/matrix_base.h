@@ -34,7 +34,6 @@ namespace linalg {
 
     public:
         using data_t = __data_t;
-        using dim_t = typename matrix_expr<data_t>::dim_t;
         using column_view = vector_view<data_t>;
         using line_view = transposed_vector_view<data_t>;
     private:
@@ -131,7 +130,7 @@ namespace linalg {
             return get_element(i, j);
         }
 
-        virtual data_t &operator()(size_t i, size_t j) override {
+        virtual data_t &operator()(size_t i, size_t j) {
             return get_element(i, j);
         }
 
@@ -149,7 +148,6 @@ namespace linalg {
     class vector_base : public matrix_base<__data_t> {
     public:
         using data_t  = __data_t;
-        using dim_t = typename matrix_base<data_t>::dim_t;
     protected:
         using matrix_base<data_t>::matrix_base;
 
